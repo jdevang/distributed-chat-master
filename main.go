@@ -19,6 +19,7 @@ var dbInstance = db.InitDb()
 // var config, _ = utils.ReadConfigFile("config.yaml")
 
 func main() {
+	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	db.CreateDbFromSchema(dbInstance)
 
