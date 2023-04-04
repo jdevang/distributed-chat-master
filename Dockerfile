@@ -1,8 +1,8 @@
 FROM golang as builder
 
 
-RUN apk update && apk upgrade && \
-    apk add --no-cache bash git make
+RUN apt update && apt upgrade && \
+    apt install bash git make
 
 WORKDIR /app
 COPY . .
