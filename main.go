@@ -19,7 +19,6 @@ var dbInstance = db.InitDb()
 // var config, _ = utils.ReadConfigFile("config.yaml")
 
 func main() {
-	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	db.CreateDbFromSchema(dbInstance)
 
@@ -29,7 +28,11 @@ func main() {
 
 	router.POST("/registerMinion", registerMinion)
 
-	router.Run("localhost:8080")
+	router.GET("/alive", alive)
+
+	router.SetTrustedProxies(nil)
+
+	router.Run(":8080")
 }
 
 func getMinionUrlIdentifier(c *gin.Context) {
@@ -90,6 +93,10 @@ func registerMinion(c *gin.Context) {
 		return
 	}
 	c.IndentedJSON(http.StatusCreated, HTTPStatusMessage{Message: "Minion added to list", MinionUrlIdentifier: minionList.MinionUrlIdentifier})
+}
+
+func alive(c *gin.Context) {
+	c.IndentedJSON(http.StatusOK, HTTPStatusMessage{Message: "I'm Alive!"})
 }
 
 // client propagation
