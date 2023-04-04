@@ -7,8 +7,10 @@ RUN apk update && apk upgrade && \
 WORKDIR /app
 COPY . .
 
+ENV CGO_ENABLED=1
+
 RUN go mod tidy
-RUN CGO_ENABLED=1 go build -tags netgo -a -v -installsuffix cgo -o bin/master main.go 
+RUN go build -tags netgo -a -v -installsuffix cgo -o bin/master main.go 
 
 
 FROM alpine:3
