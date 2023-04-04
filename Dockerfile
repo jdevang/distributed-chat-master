@@ -1,8 +1,8 @@
 FROM golang as builder
 
 
-RUN apt update && apt upgrade && \
-    apt install bash git make
+RUN apt update && \
+    apt install -y bash git make
 
 WORKDIR /app
 COPY . .
