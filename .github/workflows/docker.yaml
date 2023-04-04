@@ -25,8 +25,8 @@ jobs:
           platform: ${{ matrix.platform }}
           push: true
           tags: |
-      your-dockerhub-username/your-golang-image-name:latest-amd64
-      your-dockerhub-username/your-golang-image-name:latest-arm64
+            your-dockerhub-username/your-golang-image-name:latest-amd64
+            your-dockerhub-username/your-golang-image-name:latest-arm64
 
 
 
