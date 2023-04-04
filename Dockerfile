@@ -1,5 +1,6 @@
 FROM golang:alpine as builder
 
+
 RUN apk update && apk upgrade && \
     apk add --no-cache bash git make
 
@@ -7,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 RUN go mod tidy
-RUN go build -tags netgo -a -v -installsuffix cgo -o bin/master main.go
+RUN CGO_ENABLED=0 go build -tags netgo -a -v -installsuffix cgo -o bin/master main.go 
 
 
 FROM alpine:3
