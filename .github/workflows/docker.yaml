@@ -24,6 +24,7 @@ jobs:
         with:
           push: true
           tags: junglesucks/distributed-chat-master:latest
+          platforms: linux/amd64,linux/arm64
 
 
 
