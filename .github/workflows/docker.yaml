@@ -24,7 +24,9 @@ jobs:
           context: .
           platform: ${{ matrix.platform }}
           push: true
-          tags: junglesucks/distributed-chat-master:latest-${{ matrix.platform }}
+          tags: |
+      your-dockerhub-username/your-golang-image-name:latest-amd64
+      your-dockerhub-username/your-golang-image-name:latest-arm64
 
 
 
