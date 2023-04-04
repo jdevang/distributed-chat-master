@@ -13,10 +13,10 @@ RUN go mod tidy
 RUN go build -tags netgo -a -v -installsuffix cgo -o bin/master main.go 
 
 
-FROM alpine:3
-RUN apk update \
-    && apk add --no-cache curl wget \
-    && apk add --no-cache ca-certificates \
+FROM ubuntu
+RUN apt update \
+    && apt install -y curl wget \
+    && apt install -y ca-certificates \
     && update-ca-certificates 2>/dev/null || true
 
 COPY --from=builder /app/bin/master /master

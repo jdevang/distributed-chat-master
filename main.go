@@ -90,3 +90,6 @@ func registerMinion(c *gin.Context) {
 	}
 	c.IndentedJSON(http.StatusCreated, HTTPStatusMessage{Message: "Minion added to list", MinionUrlIdentifier: minionList.MinionUrlIdentifier})
 }
+
+// client propagation
+//dummy masters
