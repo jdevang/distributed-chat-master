@@ -3,7 +3,6 @@ package main
 import (
 	"distributed-chat/master/db"
 	"distributed-chat/master/structs"
-	"distributed-chat/master/utils"
 	"fmt"
 	"net/http"
 
@@ -15,8 +14,6 @@ type MinionList = structs.MinionList
 type HTTPStatusMessage = structs.HTTPStatusMessage
 
 var dbInstance = db.InitDb()
-
-// var config, _ = utils.ReadConfigFile("config.yaml")
 
 func main() {
 	router := gin.Default()
@@ -83,8 +80,6 @@ func registerMinion(c *gin.Context) {
 		return
 	}
 
-	minionList.MinionUrlIdentifier = utils.GenerateMinionUrlIdentifier()
-
 	_, err = db.CreateMinion(dbInstance, minionList)
 
 	if err != nil {
@@ -92,12 +87,12 @@ func registerMinion(c *gin.Context) {
 		c.IndentedJSON(http.StatusConflict, HTTPStatusMessage{Message: "Minion name exists"})
 		return
 	}
-	c.IndentedJSON(http.StatusCreated, HTTPStatusMessage{Message: "Minion added to list", MinionUrlIdentifier: minionList.MinionUrlIdentifier})
+	c.IndentedJSON(http.StatusCreated, HTTPStatusMessage{Message: "Minion added to list"})
 }
 
 func alive(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, HTTPStatusMessage{Message: "I'm Alive!"})
 }
 
-// client propagation
-//dummy masters
+// TODO: client propagation in event of minion failure
+// TODO: Master fault tolerance
