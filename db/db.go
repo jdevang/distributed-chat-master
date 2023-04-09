@@ -12,7 +12,7 @@ type MinionUserList = structs.MinionUserList
 type MinionList = structs.MinionList
 
 func InitDb() gorm.DB {
-	db, err := gorm.Open(sqlite.Open("test.db"), &gorm.Config{}) // change to postgres after setting up dockerise
+	db, err := gorm.Open(sqlite.Open("production.db"), &gorm.Config{}) // change to postgres after setting up dockerise
 	if err != nil {
 		panic("failed to connect database")
 	}
