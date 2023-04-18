@@ -12,7 +12,7 @@ type MinionUserList = structs.MinionUserList
 type MinionList = structs.MinionList
 
 func InitDb() gorm.DB {
-	db, err := gorm.Open(sqlite.Open("db/data/production.db"), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open("production.db"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
