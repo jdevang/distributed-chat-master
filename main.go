@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bytes"
 	"distributed-chat/master/db"
 	"distributed-chat/master/structs"
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,6 +19,15 @@ type HTTPStatusMessage = structs.HTTPStatusMessage
 var dbInstance = db.InitDb()
 
 func main() {
+	go func() {
+		t := time.Tick(5 * time.Minute)
+		for {
+			select {
+			case <-t:
+				healthCheckTheMinions()
+			}
+		}
+	}()
 	router := gin.Default()
 	db.CreateDbFromSchema(dbInstance)
 
@@ -94,5 +106,39 @@ func alive(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, HTTPStatusMessage{Message: "I'm Alive!"})
 }
 
+func healthCheckTheMinions() {
+	minions := db.RetrieveAllMinions(dbInstance)
+	var deadMinionList []MinionList
+	var aliveMinionList []MinionList
+	for _, minion := range minions {
+		minionUrl := "https://" + minion.MinionUrlIdentifier + ".minion.chat.junglesucks.com/alive"
+		resp, err := http.Get(minionUrl)
+		if err != nil || resp.Status != "200 OK" {
+			deadMinionList = append(deadMinionList, minion)
+		} else {
+			aliveMinionList = append(aliveMinionList, minion)
+		}
+	}
+
+	if len(deadMinionList) > 0 {
+		for _, minion := range deadMinionList {
+			deadMinionUserList := db.RetrieveAllUsersOfMinion(dbInstance, minion.MinionUrlIdentifier)
+			dividedMinionListSize := len(deadMinionUserList) / len(aliveMinionList)
+			for i, aliveMinion := range aliveMinionList {
+				db.DeleteUser(dbInstance, deadMinionUserList[i*dividedMinionListSize:(i+1)*(dividedMinionListSize)])
+				aliveMinionUrl := "https://" + aliveMinion.MinionUrlIdentifier + ".minion.chat.junglesucks.com/batchRegister"
+				payload, _ := json.Marshal(deadMinionUserList[i*dividedMinionListSize : (i+1)*(dividedMinionListSize)])
+				req, _ := http.NewRequest("POST", aliveMinionUrl, bytes.NewBuffer(payload))
+				req.Header.Set("Content-Type", "application/json")
+				client := &http.Client{}
+				_, err := client.Do(req)
+				if err != nil {
+					fmt.Println("Unable to propagate " + minion.MinionName)
+				}
+			}
+		}
+	}
+}
+
 // TODO: client propagation in event of minion failure
-// TODO: Master fault tolerance
+// TODO: Master fault tolerance <-- future work

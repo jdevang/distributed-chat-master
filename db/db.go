@@ -12,7 +12,7 @@ type MinionUserList = structs.MinionUserList
 type MinionList = structs.MinionList
 
 func InitDb() gorm.DB {
-	db, err := gorm.Open(sqlite.Open("production.db"), &gorm.Config{}) // change to postgres after setting up dockerise
+	db, err := gorm.Open(sqlite.Open("db/data/production.db"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
@@ -49,11 +49,26 @@ func CreateMinion(db gorm.DB, minionList MinionList) (MinionList, error) {
 	return minionList, nil
 }
 
-func DeleteUser(db gorm.DB, minionUserList MinionUserList) {
-	db.Delete(&minionUserList)
+func RetrieveAllMinions(db gorm.DB) []MinionList {
+	var minions []MinionList
+	result := db.Find(&minions)
+	if result.Error != nil {
+		fmt.Println("Error while retrieving minions")
+	}
+	return minions
+}
+
+func DeleteUser(db gorm.DB, minionUserLists []MinionUserList) {
+	db.Delete(&minionUserLists)
 }
 
 func UpdateUser(db gorm.DB, minionUserList MinionUserList) MinionUserList {
 	db.Save(&minionUserList)
+	return minionUserList
+}
+
+func RetrieveAllUsersOfMinion(db gorm.DB, minionUrlIdentifier string) []MinionUserList {
+	var minionUserList []MinionUserList
+	db.Find(&minionUserList, "minion_url_identifier = ?", minionUrlIdentifier)
 	return minionUserList
 }
